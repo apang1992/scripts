@@ -1,0 +1,9 @@
+8079:info
+8080:provide 1KB text data.             usage: nc 10.129.20.80 8083
+8081:support device module upgrade      usage: nc 10.129.20.80 8083
+8082:support device bin upgrade         usage: nc 10.129.20.80 8083
+8083:calculate mac to device_id .       usage: echo "123456123456" | nc 10.129.20.80 8083
+8084:beego web
+8085:mips-strace
+8086:ssl_toupper_echo_server
+8087:auto_test

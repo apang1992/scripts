@@ -1,0 +1,81 @@
+#!/bin/sh
+if [ -z "`cat /etc/passwd | grep ec2-user`" ];then
+	user=cloud
+	user_password="newrock321"
+	su=/usr/local/bin/su
+else
+	user=ec2-user
+	user_password="a9f6-0960472d"
+	su=/bin/su
+fi
+
+
+if [ "$1" = "accounts" ];then
+	EXEC_PATH="/var/newrock_cloud/accounts/accounts"
+	CONF=""
+elif [ "$1" = "icloud" ];then
+	EXEC_PATH="/var/newrock_cloud/icloud/icloud"
+	CONF=""
+elif [ "$1" = "api" ];then
+        EXEC_PATH="/var/newrock_cloud/nc-api/nc-api"
+        CONF=""
+elif [ "$1" = "devmgr" ];then
+        EXEC_PATH="/var/newrock_cloud/aw-devmgr/aw-devmgr"
+        CONF=""
+elif [ "$1" = "anylink" ];then
+        EXEC_PATH="/var/newrock_cloud/aw-anylink/aw-anylink"
+        CONF=""
+elif [ "$1" = "mqtt" ];then
+        EXEC_PATH="/var/newrock_cloud/mqtt/mosquitto"
+        CONF=" -c /var/newrock_cloud/mqtt/mosquitto.conf"
+elif [ "$1" = "proxy" ];then
+        EXEC_PATH="/var/newrock_cloud/tcpproxy/tcpproxy"
+        CONF=""
+elif [ "$1" = "keycenter" ];then
+        EXEC_PATH="/var/newrock_cloud/nc-keycenter/nc-keycenter"
+        CONF=""
+elif [ "$1" = "ncms" ];then
+        EXEC_PATH="/var/newrock_cloud/ncms/ncms"
+        CONF=""
+else
+	echo "Usage : service $0 accounts|icloud|api|devmgr|anylink|mqtt|proxy|keycenter start|stop|restart|status"
+	exit 1
+fi
+
+EXEC="`basename $EXEC_PATH`"
+PIDS="`pidof $EXEC`"
+case "$2" in
+    start)
+        if [ ! -z "$PIDS" ];then
+                echo "$EXEC is already running!"
+                exit 1
+        fi
+        echo "Starting $EXEC server..."
+        echo $user_password | $su - $user -c "$EXEC_PATH $CONF > /dev/null &" 
+        ;;
+    stop)
+        if [ ! -z "$PIDS" ];then
+            echo "Stopping ..."
+            echo $user_password | $su - $user -c "kill $PIDS"
+            echo "$EXEC stopped"
+	else
+	    echo "$1 is already stopped!"
+        fi
+        ;;
+    status)
+        if [ -z "$PIDS" ];then
+            echo "$EXEC is not running"
+        else
+            echo "$EXEC is running ($PIDS)"
+        fi
+        ;;
+    restart)
+        $0 $1 stop
+	usleep 500000
+        $0 $1 start
+        ;;
+    *)
+        echo "Usage : service $0 accounts|icloud|api|devmgr|anylink|mqtt|proxy|keycenter start|stop|restart|status"
+        ;;
+esac
+exit 0

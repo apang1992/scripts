@@ -12,6 +12,11 @@ if [ "`whoami`" != "dspang" ];then
 	exit 1
 fi
 
+if [ ! -f `dirname $0`/newrock_cloud ];then
+	echo "where is your newrock_cloud file"
+	exit 1
+fi
+
 exec 2>/dev/null
 
 if [ "$#" != 2 && "$#" != 3 ];then
@@ -97,7 +102,7 @@ update_bin(){
 		echo "usage error!"
 		exit 1
 	fi
-	scp  /var/newrock_cloud/newrock_cloud $login_user@$bin_site:/var/newrock_cloud/newrock_cloud
+	scp  `dirname $0`/newrock_cloud $login_user@$bin_site:/var/newrock_cloud/newrock_cloud
 
 	previous_pid=`echo "ps aux | grep $2 | grep -E -v \"(grep|sudo|update_bin)\"" | ssh -q  $login_user@$bin_site | awk '{print $2}' `
 	scp $bin_path $login_user@$bin_site:$bin_path.new
@@ -120,7 +125,6 @@ update_bin(){
 	else
 		echo "update_bin $2 failed"
 	fi
-	echo
 }
 
 update_web(){

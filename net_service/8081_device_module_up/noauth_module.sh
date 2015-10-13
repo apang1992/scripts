@@ -14,7 +14,7 @@ om50_web=OM50/web_0.0.48_auth.tar.gz
 om20_web=om20/web_0.0.48_auth.tar.gz
 
 if [ "$auth_flag" = "A" ];then
-	pluginmgr=CloudPlatform/pluginmgr/1.1.X/pluginmgr_1.1.18
+	pluginmgr=CloudPlatform/pluginmgr/1.1.X/pluginmgr_1.1.16
 	pluginmgr_ini=CloudPlatform/pluginmgr/1.1.X/pluginmgr.ini
 else
 	pluginmgr=CloudPlatform/pluginmgr/pluginmgr_1.0.6

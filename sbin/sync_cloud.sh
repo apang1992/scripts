@@ -41,16 +41,16 @@ if [ "$1" = "test"   ];then
 	proxy_site="$test_site"
 	login_user="cloud"
 elif [ "$1" = "test80" ];then
-    accounts_site="$localhost_site"
-    anylink_site="$localhost_site"
-    api_site="$localhost_site"
-    devmgr_site="$localhost_site"
-    icloud_site="$localhost_site"
-    keycenter_site="$localhost_site"
-    mqtt_site="$localhost_site"
-    ncms_site="$localhost_site"
-    proxy_site="$localhost_site"
-    login_user="cloud"
+    	accounts_site="$localhost_site"
+    	anylink_site="$localhost_site"
+    	api_site="$localhost_site"
+    	devmgr_site="$localhost_site"
+    	icloud_site="$localhost_site"
+    	keycenter_site="$localhost_site"
+    	mqtt_site="$localhost_site"
+  	ncms_site="$localhost_site"
+   	proxy_site="$localhost_site"
+	login_user="cloud"
 elif [ "$1" = "aws" ];then
 	accounts_site=$master_ip
 	anylink_site=$slave1_ip
@@ -136,7 +136,7 @@ update_web(){
         web_site=$icloud_site
     elif [ "$2" = "ncms" ];then
         web_path="/var/newrock_cloud/ncms/ncms_web"
-        web_site=$icloud_site
+        web_site=$ncms_site
     else
         echo $usageMsg
         exit 1
@@ -177,8 +177,8 @@ if [ -z "$3" -o "$3" = "bin" ];then
 		update_bin "" keycenter
 		update_bin "" anylink
 		update_bin "" devmgr
-		update_bin "" proxy
-		update_bin "" mqtt
+		#update_bin "" proxy
+		#update_bin "" mqtt
 		update_bin "" ncms
 	fi
 elif [ "$3" = "web" ];then

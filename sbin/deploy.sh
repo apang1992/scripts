@@ -8,8 +8,32 @@ fi
 
 case $1 in 
 	"accounts")
-		bin_dst=/var/newrock_cloud/accounts/accounts
 		bin_src=/home/dspang/go/src/accounts/accounts
+		bin_dst=/var/newrock_cloud/accounts/accounts
+		;;
+	"devmgr")
+		bin_src=/home/dspang/go/src/center_system/aw-devmgr/aw-devmgr
+		bin_dst=/var/newrock_cloud/aw-devmgr/aw-devmgr
+		;;
+	"anylink")
+		bin_src=/home/dspang/go/src/center_system/aw-anylink/aw-anylink
+		bin_dst=/var/newrock_cloud/aw-anylink/aw-anylink
+		;;
+	"api")
+		bin_src=/home/dspang/go/src/center_system/nc-api/nc-api
+		bin_dst=/var/newrock_cloud/nc-api/nc-api
+		;;
+	"icloud")
+		bin_src=/home/dspang/go/src/icloud/icloud
+		bin_dst=/var/newrock_cloud/icloud/icloud
+		;;
+	"ncms")
+		bin_src=/home/dspang/go/src/ncms/ncms
+		bin_dst=/var/newrock_cloud/ncms/ncms
+		;;
+	"keycenter")
+		bin_src=/home/dspang/go/src/center_system/nc-keycenter/nc-keycenter
+		bin_dst=/var/newrock_cloud/nc-keycenter/nc-keycenter
 		;;
 	*)
 		echo "SB"
@@ -20,12 +44,13 @@ esac
 cd `dirname $bin_src`
 
 go build || exit 1
+strip $bin_src
 
 service newrock_cloud $1 status
 service newrock_cloud $1 stop
 mkdir -p /tmp/$$
-cp $1 /tmp/$$/
-echo "newrock321" | su cloud -c "cp /tmp/$$/$1 $bin_dst"
+cp `basename $bin_src` /tmp/$$/
+echo "newrock321" | su cloud -c "cp /tmp/$$/`basename $bin_src` $bin_dst"
 echo "newrock321" | su cloud -c "$bin_dst -l debug -v &"
 service newrock_cloud $1 status
 rm -rf /tmp/$$

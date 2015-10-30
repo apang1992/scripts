@@ -1,69 +1,87 @@
 #!/bin/sh
 
-start=2015-10-28
-end=2015-10-29
+start="2015-10-29 00:00:00"
+end="2015-10-30 23:59:59" 
 
 if [ "$#" = 0 ];then
-	echo usage : ./caculate.sh rawfile "[test|aws]"
+	echo usage : ./caculate.sh jsonfile.json "[test|aws]"
 	exit 
 fi
-if [ "$2" = aws ];then
-	sshdest=ec2-user@$master_ip
-else
-	sshdest=hadoop@192.168.20.120
-fi
+
 
 if [ ! -f $1 ];then
-        #echo "scan 'device'" | hbase shell 2>/dev/null | sed -n '/ROW  COLUMN+CELL/,$p' | grep '^ [0-9a-zA-Z-]\{20\}' | grep -v geoip | grep -v device_name > tmpfile$$
-        echo "echo \"scan 'device'\" | hbase shell"  | ssh $sshdest 2>/dev/null | sed -n '/ROW  COLUMN+CELL/,$p' | grep '^ [0-9a-zA-Z-]\{20\}' | grep -v geoip | grep -v device_name > $1
+	tmpraw=rawfile$$
+	tmpjson=tmpjson$$
+	if [ "$2" = aws ];then
+		sshdest=ec2-user@$master_ip
+	else
+		sshdest=hadoop@192.168.20.120
+	fi
+        echo "echo \"scan 'device'\" | hbase shell"  | ssh $sshdest 2>/dev/null | sed -n '/ROW  COLUMN+CELL/,$p' |\
+		grep '^ [0-9a-zA-Z-]\{20\}' | \
+		grep -v device_name  |\
+		grep -v send_deviceid | \
+		grep -v agent_version | \
+		grep -v cloud_control > $tmpraw
+
+	cp $tmpraw tmp.txt$$
+	for devid in `cat tmp.txt$$ | grep "^ [0-9a-zA-Z-]\{20\}"   | grep -v geoip | grep -v agent_version  | grep -v device_name | awk '{print $1}' | uniq` ;do
+       		i=`cat tmp.txt$$ | grep $devid | grep geoip | cut -b 90-1000 | sed "s/ /-/g"`
+        	sed -i "/$devid.*geoip/s#\(.*value=\).*#\1`/usr/bin/printf \"$i\"`#g"  $tmpraw
+	done
+	rm -f tmp.txt$$
+
+	exec 8>&1
+	exec 1>$tmpjson
+
+	printf '{"devices":['
+
+	lines=`cat $tmpraw | grep "^ [0-9a-zA-Z-]\{20\}"   | grep -v geoip | grep -v agent_version| grep -v device_name | awk '{print $1}' | uniq | wc -l`
+	j=0
+	for i in `cat $tmpraw | grep "^ [0-9a-zA-Z-]\{20\}"   | grep -v geoip | grep -v agent_version  | grep -v device_name | awk '{print $1}' | uniq` ;do
+       		((j++))
+        	cat $tmpraw |\
+        	grep $i |  \
+        	sed 's/^.*column=basic:\(.*,\) timestamp=.*value=\(.*\)$/\1\2/g' | \
+        	sed 's/,/::/1;s/ //g' | \
+        	grep ": *.\{1\}" | \
+        	sed  's/^\(.*\)::\(.*\),\{0,1\}$/"\1":"\2"/g'| \
+        	sed "/time/s/T/ /g" | \
+        	sed '$q;s/^\(.*\)$/\1,/g' | \
+		sed '1i\"device_id":"'$i'",' | \
+        	sed '1p;$p' | \
+       		sed '1s/.*/{/g;$s/.*/}/g'
+        	if [ "$j" != $lines ];then
+               		printf ','
+        	fi
+	done
+
+	printf ']}'
+	exec 1>&8
+
+	cp $tmpjson tmp.txt
+
+	sed -i "/active_time/{h;s/active_time/Active_time/1;G}" $tmpjson
+	for i in `cat tmp.txt | grep active_time | awk -F '"' '{print $4}' | sed 's/ /!/g'`;do
+       		t=`echo $i |sed "s/!/ /g"`
+        	nt="`date -d "$t" +%s`"
+		if [ "$t" = "" -o "$nt" = "" ];then
+			continue
+		fi
+        	sed -i "/.*active_time.*$t/s/$t/$nt/g" $tmpjson
+	done
+	rm -f tmp.txt
+
+	sed -i '/active_time.*[0-9]\{1,\}/s/"active_time":"\(.*\)",$/"active_time":\1,/g' $tmpjson
+	sed -i '/^,,/s/,,/,/g' $tmpjson
+	#sed -i '/xE6/d' $tmpjson
+	cp $tmpjson $1
+	rm -f $tmpjson $tmpraw
 fi
-cp $1 tmpfile$$
 
-exec 8>&1
-exec 1>output.txt
+starttime=`date -d "$start" +%s`
+endtime=`date -d "$end" +%s`
 
-printf '{"devices":['
+cat $1 | jq '.devices | map(select(.active_time > '"$starttime"' and  .active_time < '"$endtime"')) '
 
-lines=`cat tmpfile$$ | grep "^ [0-9a-zA-Z-]\{20\}"   | grep -v geoip | grep -v agent_version| grep -v device_name | awk '{print $1}' | uniq | wc -l`
-j=0
-for i in `cat tmpfile$$ | grep "^ [0-9a-zA-Z-]\{20\}"   | grep -v geoip | grep -v agent_version  | grep -v device_name | awk '{print $1}' | uniq` ;do
-        ((j++))
-        cat tmpfile$$ |\
-        grep $i |grep -v geoip |  \
-        sed 's/^.*column=basic:\(.*,\) timestamp=.*value=\(.*\)$/\1\2/g' | \
-        sed 's/,/::/1;s/ //g' | \
-        grep ": *[0-9a-zA-Z]\{1\}" | \
-        sed  's/^\(.*\)::\(.*\),\{0,1\}$/"\1":"\2"/g'| \
-        sed "/time/s/T/ /g" | \
-        sed '$q;s/^\(.*\)$/\1,/g' | \
-        sed '1p;$p' | \
-        sed '1s/.*/{/g;$s/.*/}/g'
-        if [ "$j" != $lines ];then
-                printf ','
-        fi
-
-done
-
-printf ']}'
-exec 1>&8
-
-cp output.txt tmp.txt
-
-for i in `cat tmp.txt | grep active_time | awk -F '"' '{print $4}' | sed 's/ /!/g'`;do
-        t=`echo $i |sed "s/!/ /g"`
-        nt=`date -d "$t" +%s`
-        sed -i "/$t/s/$t/$nt/g" output.txt
-done
-sed -i '/active_time/s/"active_time":"\(.*\)",$/"active_time":\1,/g' output.txt
-sed -i '/^,,/s/,,/,/g' output.txt
-
-starttime=`date -d $start +%s`
-endtime=`date -d $end +%s`
-
-#cat output.txt | jq '.devices | map(select(.active_time > '$starttime' and  .active_time < '$endtime')) '
-cat output.txt | jq '.'
-
-rm output.txt
-rm tmpfile$$
-rm -f tmp.txt
 exit

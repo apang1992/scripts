@@ -1,13 +1,12 @@
 #!/bin/sh
 
-start="2015-10-29 00:00:00"
-end="2015-10-30 23:59:59" 
+start="2015-10-30 00:00:00"
+end="2015-11-02 23:59:59" 
 
 if [ "$#" = 0 ];then
 	echo usage : ./caculate.sh jsonfile.json "[test|aws]"
 	exit 
 fi
-
 
 if [ ! -f $1 ];then
 	tmpraw=rawfile$$
@@ -30,6 +29,8 @@ if [ ! -f $1 ];then
         	sed -i "/$devid.*geoip/s#\(.*value=\).*#\1`/usr/bin/printf \"$i\"`#g"  $tmpraw
 	done
 	rm -f tmp.txt$$
+
+	./ipToAddr.py $tmpraw
 
 	exec 8>&1
 	exec 1>$tmpjson
@@ -74,14 +75,13 @@ if [ ! -f $1 ];then
 
 	sed -i '/active_time.*[0-9]\{1,\}/s/"active_time":"\(.*\)",$/"active_time":\1,/g' $tmpjson
 	sed -i '/^,,/s/,,/,/g' $tmpjson
-	#sed -i '/xE6/d' $tmpjson
 	cp $tmpjson $1
-	rm -f $tmpjson $tmpraw
+	rm -f $tmpjson  $tmpraw
 fi
 
 starttime=`date -d "$start" +%s`
 endtime=`date -d "$end" +%s`
 
+time=`echo $start | sed "s/.*\(201.-..-..\).*/\1/g"`
+#echo $time
 cat $1 | jq '.devices | map(select(.active_time > '"$starttime"' and  .active_time < '"$endtime"')) '
-
-exit

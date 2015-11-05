@@ -7,6 +7,16 @@ if [ "$#" != 1  ];then
 fi
 
 case $1 in 
+	"all")
+		$0 accounts
+		$0 icloud
+		$0 api
+		$0 devmgr
+		$0 anylink
+		$0 keycenter
+		exit 0
+		#$0 ncms
+		;;
 	"accounts")
 		bin_src=/home/dspang/go/src/accounts/accounts
 		bin_dst=/var/newrock_cloud/accounts/accounts

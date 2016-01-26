@@ -1,9 +1,9 @@
 #!/bin/sh
 
-cloud_web=cloud_web_1.0.17.tar.gz
-boa_version=2_4_13_SSL
+cloud_web=cloud_web_1.0.19.tar.gz
+boa_version=2_4_21_SSL
 
-cloudae=cloudae_1.0.13
+cloudae=cloudae_1.0.16
 cloudae_ini=CloudPlatform/cloudae/cloudae.ini
 
 mx8_ii_web=MX/mx8-II/ch_nr/web_0.0.47_auth.tar.gz
@@ -14,7 +14,7 @@ om50_web=OM50/web_0.0.48_auth.tar.gz
 om20_web=om20/web_0.0.48_auth.tar.gz
 
 if [ "$auth_flag" = "A" ];then
-	pluginmgr=CloudPlatform/pluginmgr/1.1.X/pluginmgr_1.1.22
+	pluginmgr=CloudPlatform/pluginmgr/1.1.X/pluginmgr_1.1.26
 	pluginmgr_ini=CloudPlatform/pluginmgr/1.1.X/pluginmgr.ini
 else
 	pluginmgr=CloudPlatform/pluginmgr/pluginmgr_1.0.6

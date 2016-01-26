@@ -12,6 +12,8 @@ case $1 in
 		$0 icloud
 		$0 api
 		$0 devmgr
+		$0 cloudwatch
+		$0 robot
 		$0 anylink
 		$0 keycenter
 		exit 0
@@ -41,6 +43,14 @@ case $1 in
 		bin_src=/home/dspang/go/src/ncms/ncms
 		bin_dst=/var/newrock_cloud/ncms/ncms
 		;;
+	"cloudwatch")
+		bin_src=/home/dspang/go/src/center_system/aw-cloudwatch/aw-cloudwatch
+		bin_dst=/var/newrock_cloud/aw-cloudwatch/aw-cloudwatch
+		;;
+	"robot")
+		bin_src=/home/dspang/go/src/center_system/aw-robot/aw-robot
+		bin_dst=/var/newrock_cloud/aw-robot/aw-robot
+		;;
 	"keycenter")
 		bin_src=/home/dspang/go/src/center_system/nc-keycenter/nc-keycenter
 		bin_dst=/var/newrock_cloud/nc-keycenter/nc-keycenter
@@ -61,7 +71,7 @@ service newrock_cloud $1 stop
 mkdir -p /tmp/$$
 cp `basename $bin_src` /tmp/$$/
 echo "newrock321" | su cloud -c "cp /tmp/$$/`basename $bin_src` $bin_dst"
-echo "newrock321" | su cloud -c "$bin_dst -l debug -v &"
+echo "newrock321" | su cloud -c "$bin_dst -l info -v &"
 service newrock_cloud $1 status
 rm -rf /tmp/$$
 exit 0

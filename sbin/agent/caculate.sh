@@ -1,7 +1,7 @@
 #!/bin/sh
 
-start="2015-11-17 00:00:00"
-end="2015-12-1 23:59:59" 
+start="2015-11-01 00:00:00"
+end="2015-11-13 23:59:59" 
 
 if [ "$#" = 0 ];then
 	echo usage : ./caculate.sh jsonfile.json "[test|aws]"
@@ -20,12 +20,11 @@ if [ ! -f $1 ];then
 		grep '^ [0-9a-zA-Z-]\{20\}' | \
 		grep -v device_name  |\
 		grep -v send_deviceid | \
-		grep -v geo_city | \
-		grep -v geo_province | \
 		sed '/basic:agent_version/s/"/\\"/g' | \
 		grep -v cloud_control > $tmpraw
 
 	cp $tmpraw tmp.txt$$
+	cp $tmpraw raaaaaw
 	for devid in `cat tmp.txt$$ | grep "^ [0-9a-zA-Z-]\{20\}"   | grep -v geoip | grep -v device_name | awk '{print $1}' | uniq` ;do
        		i=`cat tmp.txt$$ | grep $devid | grep geoip | cut -b 90-1000 | sed "s/ /-/g"`
         	sed -i "/$devid.*geoip/s#\(.*value=\).*#\1`/usr/bin/printf \"$i\"`#g"  $tmpraw

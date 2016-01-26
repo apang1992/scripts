@@ -24,7 +24,7 @@ if [ "$#" != 2 && "$#" != 3 ];then
 	exit 1
 fi
 
-if [ "$2" != "all" -a "$2" != "accounts" -a "$2" != "icloud" -a "$2" != "api" -a "$2" != "keycenter" -a "$2" != "devmgr" -a "$2" != "anylink" -a "$2" != "mqtt" -a "$2" != "proxy" -a "$2" != "ncms"   ];then
+if [ "$2" != "all" -a "$2" != "robot" -a "$2" != "accounts"  -a "$2" != "cloudwatch" -a "$2" != "icloud" -a "$2" != "api" -a "$2" != "keycenter" -a "$2" != "devmgr" -a "$2" != "anylink" -a "$2" != "mqtt" -a "$2" != "proxy" -a "$2" != "ncms"   ];then
 	echo $usageMsg
 	exit 1
 fi
@@ -39,6 +39,8 @@ if [ "$1" = "test"   ];then
 	mqtt_site="$test_site"
 	ncms_site="$test_site"
 	proxy_site="$test_site"
+	cloudwatch_site="$test_site"
+	robot_site="$test_site"
 	login_user="cloud"
 elif [ "$1" = "test80" ];then
     	accounts_site="$localhost_site"
@@ -50,6 +52,8 @@ elif [ "$1" = "test80" ];then
     	mqtt_site="$localhost_site"
   	ncms_site="$localhost_site"
    	proxy_site="$localhost_site"
+	cloudwatch_site="$localhost_site"
+	robot_site="$localhost_site"
 	login_user="cloud"
 elif [ "$1" = "aws" ];then
 	accounts_site=$master_ip
@@ -61,6 +65,8 @@ elif [ "$1" = "aws" ];then
 	mqtt_site=$slave1_ip
 	ncms_site=$slave2_ip
 	proxy_site=$slave2_ip
+	cloudwatch_site=$slave1_ip
+	robot_site=$slave1_ip
 	ncms_site=$master_ip
 	login_user="ec2-user"
 else    
@@ -98,6 +104,12 @@ update_bin(){
 	elif [ "$2" = "ncms" ];then
 		bin_path="/var/newrock_cloud/ncms/ncms"
         bin_site=$ncms_site
+	elif [ "$2" = "cloudwatch" ];then
+		bin_path="/var/newrock_cloud/aw-cloudwatch/aw-cloudwatch"
+        bin_site=$cloudwatch_site
+	elif [ "$2" = "robot" ];then
+		bin_path="/var/newrock_cloud/aw-robot/aw-robot"
+        bin_site=$robot_site
 	else 
 		echo "usage error!"
 		exit 1
@@ -159,6 +171,9 @@ update_web(){
     echo " cd `dirname $web_path` ; tar -xzf `basename $web_path`.tar.gz ; rm -f `basename $web_path`.tar.gz" | ssh -q $login_user@$web_site
     if [ "$2" = "icloud" ];then
         echo "cp /var/newrock_cloud/icloud/public.js /var/newrock_cloud/icloud/icloud_web/static/js/" | ssh -q $login_user@$web_site
+    fi
+    if [ "$2" = "accounts" ];then
+        echo "cp /var/newrock_cloud/accounts/public.js /var/newrock_cloud/accounts/account_web/views/static/js/" | ssh -q $login_user@$web_site
     fi
     if [ "$2" = "ncms" ];then
         echo "cp /var/newrock_cloud/ncms/public.js /var/newrock_cloud/ncms/ncms_web/js/" | ssh -q $login_user@$web_site

@@ -1,2 +1,9 @@
 sbin/test.json
-sbin/aws.json
+sbin/aws.json*
+smbd
+nmbd
+*.so
+smbpasswd
+*.Dat
+*.json
+*.old

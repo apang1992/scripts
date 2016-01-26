@@ -1,0 +1,1 @@
+column=basic:agent_version, value=[ { "app_name": "cloud_basic", "version": "1.0.20" }, { "app_name": "cloudae", "version": "1.0.13" }, { "app_name": "pluginmgr", "version": "1.1.23" } ]

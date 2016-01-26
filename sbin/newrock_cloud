@@ -37,8 +37,14 @@ elif [ "$1" = "keycenter" ];then
 elif [ "$1" = "ncms" ];then
         EXEC_PATH="/var/newrock_cloud/ncms/ncms"
         CONF=""
+elif [ "$1" = "cloudwatch" ];then
+        EXEC_PATH="/var/newrock_cloud/aw-cloudwatch/aw-cloudwatch"
+        CONF=""
+elif [ "$1" = "robot" ];then
+        EXEC_PATH="/var/newrock_cloud/aw-robot/aw-robot"
+        CONF=""
 else
-	echo "Usage : service $0 accounts|icloud|api|devmgr|anylink|mqtt|proxy|keycenter start|stop|restart|status"
+	echo "Usage : service $0 accounts|icloud|api|devmgr|anylink|mqtt|proxy|keycenter|robot start|stop|restart|status"
 	exit 1
 fi
 

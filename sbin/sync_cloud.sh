@@ -24,7 +24,7 @@ if [ "$#" != 2 && "$#" != 3 ];then
 	exit 1
 fi
 
-if [ "$2" != "all" -a "$2" != "robot" -a "$2" != "accounts"  -a "$2" != "cloudwatch" -a "$2" != "icloud" -a "$2" != "api" -a "$2" != "keycenter" -a "$2" != "devmgr" -a "$2" != "anylink" -a "$2" != "mqtt" -a "$2" != "proxy" -a "$2" != "ncms"   ];then
+if [ "$2" != "all" -a "$2" != "robot" -a "$2" != "p2pmgr" -a "$2" != "accounts"  -a "$2" != "cloudwatch" -a "$2" != "icloud" -a "$2" != "api" -a "$2" != "keycenter" -a "$2" != "devmgr" -a "$2" != "anylink" -a "$2" != "mqtt" -a "$2" != "proxy" -a "$2" != "ncms"   ];then
 	echo $usageMsg
 	exit 1
 fi
@@ -41,6 +41,7 @@ if [ "$1" = "test"   ];then
 	proxy_site="$test_site"
 	cloudwatch_site="$test_site"
 	robot_site="$test_site"
+	p2pmgr_site="$test_site"
 	login_user="cloud"
 elif [ "$1" = "test80" ];then
     	accounts_site="$localhost_site"
@@ -54,6 +55,7 @@ elif [ "$1" = "test80" ];then
    	proxy_site="$localhost_site"
 	cloudwatch_site="$localhost_site"
 	robot_site="$localhost_site"
+	p2pmgr_site="$localhost_site"
 	login_user="cloud"
 elif [ "$1" = "aws" ];then
 	accounts_site=$master_ip
@@ -67,6 +69,7 @@ elif [ "$1" = "aws" ];then
 	proxy_site=$slave2_ip
 	cloudwatch_site=$slave1_ip
 	robot_site=$slave1_ip
+	p2pmgr_site=$slave2_ip
 	ncms_site=$master_ip
 	login_user="ec2-user"
 else    
@@ -110,6 +113,9 @@ update_bin(){
 	elif [ "$2" = "robot" ];then
 		bin_path="/var/newrock_cloud/aw-robot/aw-robot"
         bin_site=$robot_site
+	elif [ "$2" = "p2pmgr" ];then
+		bin_path="/var/newrock_cloud/aw-p2pmgr/aw-p2pmgr"
+        bin_site=$p2pmgr_site
 	else 
 		echo "usage error!"
 		exit 1

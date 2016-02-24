@@ -55,6 +55,10 @@ case $1 in
 		bin_src=/home/dspang/go/src/center_system/nc-keycenter/nc-keycenter
 		bin_dst=/var/newrock_cloud/nc-keycenter/nc-keycenter
 		;;
+	"p2pmgr")
+		bin_src=/home/dspang/go/src/center_system/aw-p2pmgr/aw-p2pmgr
+		bin_dst=/var/newrock_cloud/aw-p2pmgr/aw-p2pmgr
+		;;
 	*)
 		echo "SB"
 		exit 1

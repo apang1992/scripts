@@ -28,7 +28,7 @@ elif [ "$1" = "anylink" ];then
 elif [ "$1" = "mqtt" ];then
         EXEC_PATH="/var/newrock_cloud/mqtt/mosquitto"
         CONF=" -c /var/newrock_cloud/mqtt/mosquitto.conf"
-elif [ "$1" = "proxy" ];then
+elif [ "$1" = "tcpproxy" ];then
         EXEC_PATH="/var/newrock_cloud/tcpproxy/tcpproxy"
         CONF=""
 elif [ "$1" = "keycenter" ];then
@@ -43,8 +43,11 @@ elif [ "$1" = "cloudwatch" ];then
 elif [ "$1" = "robot" ];then
         EXEC_PATH="/var/newrock_cloud/aw-robot/aw-robot"
         CONF=""
+elif [ "$1" = "p2pmgr" ];then
+        EXEC_PATH="/var/newrock_cloud/aw-p2pmgr/aw-p2pmgr"
+        CONF=""
 else
-	echo "Usage : service $0 accounts|icloud|api|devmgr|anylink|mqtt|proxy|keycenter|robot start|stop|restart|status"
+	echo "Usage : service $0 accounts|icloud|api|devmgr|anylink|mqtt|tcpproxy|keycenter|robot|p2pmgr start|stop|restart|status"
 	exit 1
 fi
 
@@ -81,7 +84,7 @@ case "$2" in
         $0 $1 start
         ;;
     *)
-        echo "Usage : service $0 accounts|icloud|api|devmgr|anylink|mqtt|proxy|keycenter start|stop|restart|status"
+        echo "Usage : service $0 accounts|icloud|api|devmgr|anylink|mqtt|tcpproxy|keycenter start|stop|restart|status"
         ;;
 esac
 exit 0
